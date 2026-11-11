@@ -31,6 +31,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.gestures.animateScrollBy
+import androidx.compose.ui.input.key.type
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
@@ -442,7 +446,7 @@ fun SettingsScreen(onBackClick: () -> Unit) {
             onDismiss = { showFontDialog = false },
             onSelect = { selected ->
                 if (selected == customLabel) {
-                    fontPickerLauncher.launch("*/*")
+                    runCatching { fontPickerLauncher.launch("*/*") }
                 } else {
                     val font = when (selected) {
                         serifLabel -> "serif"
@@ -710,9 +714,15 @@ fun SettingsScreen(onBackClick: () -> Unit) {
     }
 
 
+    // TV: the remote's Back button replaces the top-left arrow (focus used to get stuck on it),
+    // and D-pad up/down always moves through the list, scrolling if nothing focusable is in that direction.
+    val settingsIsTv = remember { com.hasanege.materialtv.utils.TvUtils.isHardwareTv(context) }
+    val settingsScroll = rememberScrollState()
+    val settingsFocus = androidx.compose.ui.platform.LocalFocusManager.current
+
     Scaffold(
         topBar = {
-            TopAppBar(
+            if (!settingsIsTv) TopAppBar(
                 title = { 
                     Text(
                         text = stringResource(R.string.settings_title),
@@ -737,7 +747,27 @@ fun SettingsScreen(onBackClick: () -> Unit) {
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
-                .verticalScroll(rememberScrollState())
+                .then(
+                    if (settingsIsTv) Modifier.onPreviewKeyEvent { e ->
+                        if (e.type != androidx.compose.ui.input.key.KeyEventType.KeyDown) return@onPreviewKeyEvent false
+                        when (e.key) {
+                            androidx.compose.ui.input.key.Key.DirectionDown -> {
+                                if (!settingsFocus.moveFocus(androidx.compose.ui.focus.FocusDirection.Down)) {
+                                    scope.launch { settingsScroll.animateScrollBy(400f) }
+                                }
+                                true
+                            }
+                            androidx.compose.ui.input.key.Key.DirectionUp -> {
+                                if (!settingsFocus.moveFocus(androidx.compose.ui.focus.FocusDirection.Up)) {
+                                    scope.launch { settingsScroll.animateScrollBy(-400f) }
+                                }
+                                true
+                            }
+                            else -> false
+                        }
+                    } else Modifier
+                )
+                .verticalScroll(settingsScroll)
                 .padding(paddingValues)
                 .padding(16.dp)
                 .navigationBarsPadding(),
@@ -797,7 +827,7 @@ fun SettingsScreen(onBackClick: () -> Unit) {
                                 modifier = Modifier
                                     .size(72.dp)
                                     .clip(CircleShape)
-                                    .clickable { imagePickerLauncher.launch("image/*") },
+                                    .clickable { runCatching { imagePickerLauncher.launch("image/*") } },
                                 contentAlignment = Alignment.Center
                             ) {
                                 if (profileImageUrl.isNotBlank()) {
@@ -861,7 +891,7 @@ fun SettingsScreen(onBackClick: () -> Unit) {
                             icon = Icons.Default.CameraAlt,
                             title = stringResource(R.string.settings_profile_photo),
                             value = if (profileImageUrl.isNotBlank()) stringResource(R.string.settings_profile_photo_change) else stringResource(R.string.settings_profile_photo_add),
-                            onClick = { imagePickerLauncher.launch("image/*") }
+                            onClick = { runCatching { imagePickerLauncher.launch("image/*") } }
                         )
                     }
                 }

@@ -34,7 +34,10 @@ data class PanelUpdate(
         return order.firstOrNull { it.isNotBlank() } ?: ""
     }
 
-    val isNewer: Boolean get() = versionCode > BuildConfig.VERSION_CODE && bestUrl().isNotBlank()
+    // Never offer the build that's already installed, even if the panel's version code is off
+    val isNewer: Boolean get() = versionCode > BuildConfig.VERSION_CODE &&
+        !versionName.trim().equals(BuildConfig.VERSION_NAME, ignoreCase = true) &&
+        bestUrl().isNotBlank()
 }
 
 data class PanelMessage(val id: String, val title: String, val body: String, val once: Boolean)
