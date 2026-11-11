@@ -652,9 +652,11 @@ fun HomeScreen(
         lifecycleOwner.lifecycle.addObserver(observer)
     }
     
+    val homeIsTv = remember { com.hasanege.materialtv.utils.TvUtils.isHardwareTv(context) }
     val animateToTab: (Int) -> Unit = { targetIndex ->
         selectedTabIndex = targetIndex
-        scope.launch {
+        // TV builds the selected tab directly (no pager), so there's nothing to scroll
+        if (!homeIsTv) scope.launch {
             pagerState.animateScrollToPage(
                 page = targetIndex,
                 animationSpec = androidx.compose.animation.core.spring(
@@ -723,14 +725,25 @@ fun HomeScreen(
         // 1. Content Pager (Bottom Layer)
         val tabHeightDp = 72.dp
         
-        val pagerIsTv = remember { com.hasanege.materialtv.utils.TvUtils.isHardwareTv(context) }
-        HorizontalPager(
+        if (homeIsTv) {
+            // TV: no pager at all. Pagers + remote focus crash Compose ("Pin should not be called on an
+            // already disposed item"), so just show the selected tab.
+            androidx.compose.runtime.key(selectedTabIndex) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    CategoryScreen(
+                        viewModel = homeViewModel,
+                        selectedTab = selectedTabIndex,
+                        contentPadding = PaddingValues(top = tabHeightDp, bottom = 100.dp),
+                        isSearchExpanded = isSearchExpanded,
+                        searchQuery = searchQuery
+                    )
+                }
+            }
+        } else HorizontalPager(
             state = pagerState,
             modifier = Modifier.fillMaxSize(),
             pageSpacing = 0.dp,
-            // TV: no swipe-paging (it fights the remote) and only build the visible tab
-            userScrollEnabled = !pagerIsTv,
-            beyondViewportPageCount = if (pagerIsTv) 0 else 1
+            beyondViewportPageCount = 1
         ) { page ->
             // Smooth page transition
             val pageOffset = ((pagerState.currentPage - page) + pagerState.currentPageOffsetFraction)

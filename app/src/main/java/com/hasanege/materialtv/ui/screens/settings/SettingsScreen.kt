@@ -1426,7 +1426,8 @@ fun SettingsScreen(onBackClick: () -> Unit) {
                     Triple(Icons.Default.Bolt, stringResource(R.string.settings_feature_performance_title), stringResource(R.string.settings_feature_performance_desc))
                 )
                 
-                SettingsSection(
+                // Feature carousel is a pager: hidden on TV (pager + remote focus crashes Compose)
+                if (!com.hasanege.materialtv.utils.TvUtils.isHardwareTv(context)) SettingsSection(
                     title = stringResource(R.string.settings_features_title),
                     icon = Icons.Default.AutoAwesome
                 ) {

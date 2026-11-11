@@ -116,7 +116,7 @@ fun FavoritesScreen(viewModel: FavoritesViewModel) {
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.fillMaxSize(),
-            userScrollEnabled = true, // Usually true, but we could make it conditional if needed
+            userScrollEnabled = !com.hasanege.materialtv.utils.TvUtils.isHardwareTv(context), // no swipe-paging on TV
             beyondViewportPageCount = 1
         ) { page ->
             // Smooth page transition with scale and alpha - matching Home screen style
