@@ -312,7 +312,7 @@ class SettingsRepository @Inject constructor(@dagger.hilt.android.qualifiers.App
 
     // Theme Mode
     val themeMode: Flow<String> = context.settingsDataStore.data.map { prefs ->
-        prefs[THEME_MODE] ?: "system"
+        prefs[THEME_MODE] ?: "dark"
     }
 
     suspend fun setThemeMode(mode: String) {

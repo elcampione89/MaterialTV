@@ -305,7 +305,13 @@ fun LoginScreen(
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     } else {
-                        // Original Logo / Title
+                        // Logo / Title
+                        androidx.compose.foundation.Image(
+                            painter = androidx.compose.ui.res.painterResource(R.drawable.ic_app_logo),
+                            contentDescription = null,
+                            modifier = Modifier.size(72.dp).clip(com.hasanege.materialtv.ui.theme.ExpressiveShapes.Large)
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
                                 text = stringResource(R.string.app_name_material),

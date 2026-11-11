@@ -248,7 +248,7 @@ fun MaterialTVApp(
     val initialNav = remember(startPage) {
         when (startPage) {
             "favorites" -> MainScreen.Favorites.route
-            "downloads" -> MainScreen.Downloads.route
+            "downloads" -> if (BuildConfig.DOWNLOADS_ENABLED) MainScreen.Downloads.route else MainScreen.Home.route
             "profile" -> MainScreen.Profile.route
             else -> MainScreen.Home.route // movies, series, live all go to Home
         }
@@ -266,10 +266,10 @@ fun MaterialTVApp(
     val currentScreen = remember(initialNav) { mutableStateOf(initialNav) }
     val panelConfig by com.hasanege.materialtv.panel.PanelClient.config.collectAsState()
     val bottomNavItems = if (panelConfig.plexEnabled) {
-        listOf(MainScreen.Home, MainScreen.Plex, MainScreen.Favorites, MainScreen.Downloads, MainScreen.Profile)
+        listOf(MainScreen.Home, MainScreen.Plex, MainScreen.Favorites, MainScreen.Profile)
     } else {
-        listOf(MainScreen.Home, MainScreen.Favorites, MainScreen.Downloads, MainScreen.Profile)
-    }
+        listOf(MainScreen.Home, MainScreen.Favorites, MainScreen.Profile)
+    }.let { if (BuildConfig.DOWNLOADS_ENABLED) it.toMutableList().apply { add(size - 1, MainScreen.Downloads) } else it }
     
     // Search state
     var isSearchExpanded by remember { mutableStateOf(false) }
@@ -1150,6 +1150,7 @@ fun CategoryScreen(
                                             (a.key.categoryName ?: "").compareTo(b.key.categoryName ?: "", ignoreCase = true)
                                         }
                                     }
+                                    .sortedBy { categoryPriority(it.key.categoryName) } // 24/7 categories first
 
                                 // Hero Banner: "İzlemeye DEVAM ET" (Only render item if continueWatchingList is not empty)
                                 if (continueWatchingList.isNotEmpty()) {
@@ -1213,6 +1214,7 @@ fun CategoryScreen(
                                             (a.key.categoryName ?: "").compareTo(b.key.categoryName ?: "", ignoreCase = true)
                                         }
                                     }
+                                    .sortedBy { categoryPriority(it.key.categoryName) } // 24/7 categories first
 
                                 // Hero Banner: "İzlemeye DEVAM ET" (Only render item if continueWatchingList is not empty)
                                 if (continueWatchingList.isNotEmpty()) {
@@ -1280,6 +1282,7 @@ fun CategoryScreen(
                                             (a.key.categoryName ?: "").compareTo(b.key.categoryName ?: "", ignoreCase = true)
                                         }
                                     }
+                                    .sortedBy { categoryPriority(it.key.categoryName) } // 24/7 categories first
 
                                 // Hero Banner: "İzlemeye DEVAM ET" for Live TV tab (Only render item if continueWatchingList is not empty)
                                 if (continueWatchingList.isNotEmpty()) {
@@ -1373,7 +1376,7 @@ fun CategoryChips(viewModel: HomeViewModel, selectedTab: Int) {
                 border = null
             )
         }
-        items(categories, key = { it.categoryId }) { category ->
+        items(categories.sortedBy { categoryPriority(it.categoryName) }, key = { it.categoryId }) { category ->
             val isSelected = category.categoryId == selectedCategoryId
             FilterChip(
                 selected = isSelected,
@@ -2306,6 +2309,7 @@ fun ManageCategoriesBottomSheet(
     }
 
     val sortedCategories = remember(categoryList, customOrder) {
+        run {
         if (customOrder.isEmpty()) {
             categoryList.sortedBy { it.categoryName?.lowercase() ?: "" }
         } else {
@@ -2324,6 +2328,7 @@ fun ManageCategoriesBottomSheet(
                 }
             }
         }
+    }.sortedBy { categoryPriority(it.categoryName) }
     }
 
     ModalBottomSheet(
@@ -2485,4 +2490,11 @@ fun ManageCategoriesBottomSheet(
             androidx.compose.foundation.layout.Spacer(Modifier.height(16.dp))
         }
     }
+}
+
+
+/** Panel build: categories with 24/7 in the name always sort to the top (stable, keeps the user's order otherwise). */
+fun categoryPriority(name: String?): Int {
+    val n = name?.lowercase() ?: return 1
+    return if (n.contains("24/7") || n.contains("24-7") || n.contains("24x7") || Regex("""(^|[^0-9])247([^0-9]|$)""").containsMatchIn(n)) 0 else 1
 }

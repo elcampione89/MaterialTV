@@ -40,6 +40,8 @@ android {
         versionCode = appVersionCode
         versionName = appVersionName
         buildConfigField("String", "PANEL_URL", "\"$panelUrl\"")
+        // Downloads are switched off in the panel build (set DOWNLOADS_ENABLED=true in gradle.properties to bring them back)
+        buildConfigField("boolean", "DOWNLOADS_ENABLED", ((project.findProperty("DOWNLOADS_ENABLED") as String?) ?: "false"))
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 

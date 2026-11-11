@@ -608,7 +608,7 @@ fun DetailScreen(
                             }
 
                             // Download Button (Only for movies)
-                            if (movie != null) {
+                            if (movie != null && com.hasanege.materialtv.BuildConfig.DOWNLOADS_ENABLED) {
                                 val download = activeDownloads.find { 
                                     it.title == movie.name || (it.url.contains(movie.streamId.toString()))
                                 }
@@ -646,7 +646,7 @@ fun DetailScreen(
                         }
 
                         // Series Download Season Button
-                        if (series != null) {
+                        if (series != null && com.hasanege.materialtv.BuildConfig.DOWNLOADS_ENABLED) {
                             Spacer(modifier = Modifier.height(16.dp))
                             FilledTonalButton(
                                 onClick = { 
@@ -1107,7 +1107,7 @@ fun DetailScreen(
                                     )
                                 }
 
-                                if (movie != null) {
+                                if (movie != null && com.hasanege.materialtv.BuildConfig.DOWNLOADS_ENABLED) {
                                     val download = activeDownloads.find { 
                                         it.title == movie.name || (it.url.contains(movie.streamId.toString()))
                                     }
@@ -1143,7 +1143,7 @@ fun DetailScreen(
                                 }
                             }
 
-                            if (series != null) {
+                            if (series != null && com.hasanege.materialtv.BuildConfig.DOWNLOADS_ENABLED) {
                                 FilledTonalButton(
                                     onClick = { 
                                         val seasonNum = selectedSeasonKey.toIntOrNull() ?: 1
@@ -1469,7 +1469,9 @@ fun EpisodeItem(
                 Icon(Icons.Rounded.PlayArrow, contentDescription = stringResource(R.string.detail_play), tint = MaterialTheme.colorScheme.primary)
             }
             
-            if (isDownloaded) {
+            if (!com.hasanege.materialtv.BuildConfig.DOWNLOADS_ENABLED) {
+                // Downloads disabled in this build
+            } else if (isDownloaded) {
                  IconButton(onClick = { /* Already downloaded */ }) {
                      Icon(Icons.Rounded.Check, contentDescription = stringResource(R.string.downloads_completed), tint = MaterialTheme.colorScheme.primary)
                  }

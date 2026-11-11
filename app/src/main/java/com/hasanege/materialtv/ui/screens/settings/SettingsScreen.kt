@@ -910,12 +910,14 @@ fun SettingsScreen(onBackClick: () -> Unit) {
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                     }
 
+                    // Panel build: never show the real server URL, only the panel's server name
+                    val panelServerName = com.hasanege.materialtv.panel.PanelClient.config.value.servers
+                        .firstOrNull { serverUrl != null && it.url.trimEnd('/').equals(serverUrl.trimEnd('/'), ignoreCase = true) }?.name
                     ExpressiveSettingValueItem(
                         icon = Icons.Default.Dns,
                         title = stringResource(R.string.settings_account_server),
-                        value = serverUrl ?: stringResource(R.string.unknown),
-                        trailingIcon = Icons.Default.ContentCopy,
-                        onClick = { serverUrl?.let { copyToClipboard(it) } }
+                        value = panelServerName ?: "Hidden",
+                        onClick = {}
                     )
 
                     ExpressiveSettingValueItem(
@@ -970,7 +972,7 @@ fun SettingsScreen(onBackClick: () -> Unit) {
             }
             
             // Download Settings Section
-            AnimatedVisibility(
+            if (com.hasanege.materialtv.BuildConfig.DOWNLOADS_ENABLED) AnimatedVisibility(
                 visible = isVisible,
                 enter = fadeIn(animationSpec = tween(delayMillis = 50)) +
                         slideInVertically(initialOffsetY = { it / 4 })

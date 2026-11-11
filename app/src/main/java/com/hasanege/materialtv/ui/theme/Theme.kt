@@ -135,7 +135,7 @@ fun MaterialTVTheme(
 ) {
   val context = androidx.compose.ui.platform.LocalContext.current
   val settingsRepository = androidx.compose.runtime.remember { com.hasanege.materialtv.data.SettingsRepository.getInstance(context) }
-  val themeMode by settingsRepository.themeMode.collectAsState(initial = "system")
+  val themeMode by settingsRepository.themeMode.collectAsState(initial = "dark")
   val fontFamily by settingsRepository.fontFamily.collectAsState(initial = "default")
   val customAccentColor by settingsRepository.customAccentColor.collectAsState(initial = "#6750A4")
   val customBackgroundColor by settingsRepository.customBackgroundColor.collectAsState(initial = "#000000")

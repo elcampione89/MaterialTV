@@ -157,7 +157,7 @@ class SettingsViewModel @Inject constructor(
 
     // Theme Mode
     val themeMode: StateFlow<String> = repository.themeMode
-        .stateIn(viewModelScope, SharingStarted.Eagerly, "system")
+        .stateIn(viewModelScope, SharingStarted.Eagerly, "dark")
 
     fun setThemeMode(mode: String) {
         viewModelScope.launch {
