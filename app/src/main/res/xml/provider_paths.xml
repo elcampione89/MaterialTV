@@ -6,4 +6,6 @@
     <external-files-path name="external_files_path" path="." />
     <!-- In case we save to getExternalCacheDir() -->
     <external-cache-path name="external_cache_path" path="." />
+    <!-- Panel app updates are downloaded here -->
+    <cache-path name="updates" path="updates/" />
 </paths>

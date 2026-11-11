@@ -15,27 +15,37 @@ android {
     namespace = "com.hasanege.materialtv"
     compileSdk = 36
 
+    // Signing: CI writes the keystore from GitHub secrets. Without one, release falls back to debug signing.
+    val releaseStore = rootProject.file(
+        System.getenv("MTV_KEYSTORE_FILE") ?: (project.findProperty("MTV_KEYSTORE_FILE") as String? ?: "keystore.jks")
+    )
     signingConfigs {
         create("release") {
-            storeFile = file(rootProject.file(project.properties["MYAPP_RELEASE_STORE_FILE"] as String? ?: "keystore.jks"))
-            storePassword = project.properties["MYAPP_RELEASE_STORE_PASSWORD"] as String? ?: ""
-            keyAlias = project.properties["MYAPP_RELEASE_KEY_ALIAS"] as String? ?: ""
-            keyPassword = project.properties["MYAPP_RELEASE_KEY_PASSWORD"] as String? ?: ""
+            storeFile = releaseStore
+            storePassword = System.getenv("MTV_KEYSTORE_PASSWORD") ?: (project.findProperty("MTV_KEYSTORE_PASSWORD") as String? ?: "")
+            keyAlias = System.getenv("MTV_KEY_ALIAS") ?: (project.findProperty("MTV_KEY_ALIAS") as String? ?: "materialtv")
+            keyPassword = System.getenv("MTV_KEY_PASSWORD") ?: (project.findProperty("MTV_KEY_PASSWORD") as String? ?: "")
         }
     }
 
+    // Panel build settings (override with -P or gradle.properties)
+    val panelUrl = (project.findProperty("PANEL_URL") as String?) ?: ""
+    val appVersionCode = ((project.findProperty("APP_VERSION_CODE") as String?) ?: "1000").toInt()
+    val appVersionName = (project.findProperty("APP_VERSION_NAME") as String?) ?: "3.2-p1"
+
     defaultConfig {
-        applicationId = "com.hasanege.materialtv"
+        applicationId = (project.findProperty("APP_ID") as String?) ?: "tech.daemonhub.materialtv"
         minSdk = 26
         targetSdk = 35
-        versionCode = 14
-        versionName = "3.2"
+        versionCode = appVersionCode
+        versionName = appVersionName
+        buildConfigField("String", "PANEL_URL", "\"$panelUrl\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         ndk {
             abiFilters.clear()
-            abiFilters.addAll(listOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64"))
+            abiFilters.addAll(listOf("arm64-v8a", "armeabi-v7a"))
         }
     }
 
@@ -47,7 +57,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = if (releaseStore.exists()) signingConfigs.getByName("release") else signingConfigs.getByName("debug")
         }
         debug {
             // debug ayarları
@@ -58,7 +68,7 @@ android {
         abi {
             isEnable = true
             reset()
-            include("arm64-v8a", "armeabi-v7a", "x86", "x86_64")
+            include("arm64-v8a", "armeabi-v7a")
             isUniversalApk = true
         }
     }

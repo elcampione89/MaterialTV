@@ -30,6 +30,7 @@
 
     <!-- App Name -->
     <string name="app_name">MaterialTV</string>
+    <string name="nav_plex" translatable="false">Plex</string>
     <string name="app_name_material">Material</string>
     <string name="app_name_tv">TV</string>
 

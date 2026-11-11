@@ -75,6 +75,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.lifecycleScope
@@ -120,6 +121,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         
         val credentialsManager = (application as MainApplication).credentialsManager
+        com.hasanege.materialtv.panel.PanelClient.loadCached(applicationContext)
         val settingsRepo = com.hasanege.materialtv.data.SettingsRepository.getInstance(applicationContext)
 
         setContent {
@@ -163,6 +165,7 @@ class MainActivity : AppCompatActivity() {
                                 customName = customName,
                                 customAvatar = customAvatar
                             )
+                            com.hasanege.materialtv.panel.PanelStartupDialogs()
                         }
                     }
                 }
@@ -330,7 +333,11 @@ fun LoginScreen(
                     Spacer(modifier = Modifier.height(24.dp))
 
                     // Tab Row with M3 styling
-                    SecondaryTabRow(selectedTabIndex = if (viewModel.isM3uLogin) 1 else 0) {
+                    val loginPanelConfig by com.hasanege.materialtv.panel.PanelClient.config.collectAsState()
+                    LaunchedEffect(loginPanelConfig.allowM3u) {
+                        if (!loginPanelConfig.allowM3u) viewModel.isM3uLogin = false
+                    }
+                    if (loginPanelConfig.allowM3u) SecondaryTabRow(selectedTabIndex = if (viewModel.isM3uLogin) 1 else 0) {
                         Tab(
                             selected = !viewModel.isM3uLogin,
                             onClick = { viewModel.isM3uLogin = false },
@@ -477,17 +484,79 @@ fun XtreamLoginFields(
     passwordFocusRequester: FocusRequester,
     onLogin: () -> Unit
 ) {
-    OutlinedTextField(
-        value = viewModel.serverUrl,
-        onValueChange = { viewModel.serverUrl = it },
-        label = { Text(stringResource(R.string.login_server_url_label)) },
-        modifier = Modifier.fillMaxWidth(),
-        shape = com.hasanege.materialtv.ui.theme.ExpressiveShapes.Medium,
-        singleLine = true,
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-        keyboardActions = KeyboardActions(onNext = { usernameFocusRequester.requestFocus() })
-    )
-    Spacer(modifier = Modifier.height(12.dp))
+    val panelConfig by com.hasanege.materialtv.panel.PanelClient.config.collectAsState()
+    val servers = panelConfig.servers
+    var useCustomUrl by remember(servers) {
+        mutableStateOf(servers.isEmpty() || (viewModel.serverUrl.isNotBlank() && servers.none { sameServer(it.url, viewModel.serverUrl) }))
+    }
+    // Pre-select the first panel server for new users
+    LaunchedEffect(servers) {
+        if (servers.isNotEmpty() && viewModel.serverUrl.isBlank()) {
+            viewModel.serverUrl = servers.first().url
+            useCustomUrl = false
+        }
+    }
+
+    if (servers.isNotEmpty()) {
+        var expanded by remember { mutableStateOf(false) }
+        val selectedName = if (useCustomUrl) "Custom URL"
+            else servers.firstOrNull { sameServer(it.url, viewModel.serverUrl) }?.name ?: servers.first().name
+        Box(modifier = Modifier.fillMaxWidth()) {
+            OutlinedButton(
+                onClick = { expanded = true },
+                modifier = Modifier.fillMaxWidth().height(56.dp),
+                shape = com.hasanege.materialtv.ui.theme.ExpressiveShapes.Medium
+            ) {
+                Text(
+                    text = "Server: $selectedName",
+                    modifier = Modifier.weight(1f),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                androidx.compose.material3.Icon(
+                    Icons.Default.ArrowDropDown,
+                    contentDescription = null
+                )
+            }
+            androidx.compose.material3.DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                servers.forEach { server ->
+                    androidx.compose.material3.DropdownMenuItem(
+                        text = { Text(server.name) },
+                        onClick = {
+                            viewModel.serverUrl = server.url
+                            useCustomUrl = false
+                            expanded = false
+                        }
+                    )
+                }
+                if (panelConfig.allowCustomDns) {
+                    androidx.compose.material3.DropdownMenuItem(
+                        text = { Text("Custom URL…") },
+                        onClick = {
+                            useCustomUrl = true
+                            viewModel.serverUrl = ""
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(12.dp))
+    }
+
+    if (useCustomUrl && (servers.isEmpty() || panelConfig.allowCustomDns)) {
+        OutlinedTextField(
+            value = viewModel.serverUrl,
+            onValueChange = { viewModel.serverUrl = it },
+            label = { Text(stringResource(R.string.login_server_url_label)) },
+            modifier = Modifier.fillMaxWidth(),
+            shape = com.hasanege.materialtv.ui.theme.ExpressiveShapes.Medium,
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(onNext = { usernameFocusRequester.requestFocus() })
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+    }
     OutlinedTextField(
         value = viewModel.username,
         onValueChange = { viewModel.username = it },
@@ -514,6 +583,11 @@ fun XtreamLoginFields(
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
         keyboardActions = KeyboardActions(onDone = { onLogin() })
     )
+}
+
+private fun sameServer(a: String, b: String): Boolean {
+    fun norm(u: String) = u.trim().trimEnd('/').removePrefix("http://").removePrefix("https://").lowercase()
+    return norm(a) == norm(b)
 }
 
 @Composable

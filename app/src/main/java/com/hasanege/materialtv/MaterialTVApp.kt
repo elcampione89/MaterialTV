@@ -264,7 +264,12 @@ fun MaterialTVApp(
     }
 
     val currentScreen = remember(initialNav) { mutableStateOf(initialNav) }
-    val bottomNavItems = listOf(MainScreen.Home, MainScreen.Favorites, MainScreen.Downloads, MainScreen.Profile)
+    val panelConfig by com.hasanege.materialtv.panel.PanelClient.config.collectAsState()
+    val bottomNavItems = if (panelConfig.plexEnabled) {
+        listOf(MainScreen.Home, MainScreen.Plex, MainScreen.Favorites, MainScreen.Downloads, MainScreen.Profile)
+    } else {
+        listOf(MainScreen.Home, MainScreen.Favorites, MainScreen.Downloads, MainScreen.Profile)
+    }
     
     // Search state
     var isSearchExpanded by remember { mutableStateOf(false) }
@@ -323,6 +328,7 @@ fun MaterialTVApp(
                                 MainScreen.Favorites.route -> com.hasanege.materialtv.ui.screens.favorites.FavoritesScreen(favoritesViewModel)
                                 MainScreen.Downloads.route -> DownloadsScreen(downloadsViewModel)
                                 MainScreen.Profile.route -> ProfileScreen(profileViewModel)
+                                MainScreen.Plex.route -> com.hasanege.materialtv.plex.PlexScreen()
                             }
                         }
                     }
@@ -357,6 +363,7 @@ fun MaterialTVApp(
                                 MainScreen.Favorites.route -> com.hasanege.materialtv.ui.screens.favorites.FavoritesScreen(favoritesViewModel)
                                 MainScreen.Downloads.route -> DownloadsScreen(downloadsViewModel)
                                 MainScreen.Profile.route -> ProfileScreen(profileViewModel)
+                                MainScreen.Plex.route -> com.hasanege.materialtv.plex.PlexScreen()
                             }
                         }
                     }

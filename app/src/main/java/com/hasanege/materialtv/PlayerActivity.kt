@@ -186,6 +186,8 @@ class PlayerActivity : ComponentActivity() {
     private var isLiveStream: Boolean = false
     private var isDownloadedFile: Boolean = false
     private var streamId: Int = -1
+    // Set when playing from the Plex tab; progress goes back to Plex instead of local history
+    private var plexRatingKey: String? = null
     private var uri: String? = null
     private var originalUrl: String? = null
     private var streamIcon: String? = null
@@ -239,6 +241,7 @@ class PlayerActivity : ComponentActivity() {
         originalUrl = intent.getStringExtra("ORIGINAL_URL")
         
         streamIcon = intent.getStringExtra("STREAM_ICON")
+        plexRatingKey = intent.getStringExtra("PLEX_RATING_KEY")
         
         // Check if this is a live stream
         // IMPORTANT: If SERIES_ID is set, this is a series episode, NOT a live stream,
@@ -274,7 +277,7 @@ class PlayerActivity : ComponentActivity() {
 
         // Indirilmis icerik (yerel dosya) aciliyorsa, ayara gore VLC zorla
         val currentUri = uri
-        if (currentUri != null && useVlcForDownloads) {
+        if (currentUri != null && useVlcForDownloads && plexRatingKey == null) {
             engineType = EngineType.VLC
         }
 
@@ -1404,6 +1407,19 @@ class PlayerActivity : ComponentActivity() {
                java.util.concurrent.TimeUnit.MILLISECONDS.toSeconds(duration) % 60)
                
             android.util.Log.d("PlayerActivity", "Raw Position: $posStr, Duration: $durStr")
+
+            val plexKey = plexRatingKey
+            val plexSession = com.hasanege.materialtv.plex.PlexApi.activeSession
+            if (plexKey != null) {
+                lastPlaybackPosition = position
+                if (plexSession != null && duration > 0) {
+                    val appCtx = applicationContext
+                    kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+                        com.hasanege.materialtv.plex.PlexApi.reportProgress(appCtx, plexSession, plexKey, position, duration)
+                    }
+                }
+                return@let
+            }
             lastPlaybackPosition = position
             
             // Calculate actual watch time for this session segment

@@ -36,26 +36,22 @@ class UpdateManager(private val context: Context) {
     private val apiRepoUrl = "https://api.github.com/repos/hasan-ege/MaterialTV/releases/latest"
     private val webLatestUrl = "https://github.com/hasan-ege/MaterialTV/releases/latest"
 
+    // Panel build: updates come from your own panel (api.php), not GitHub.
     suspend fun checkForUpdate(): Result<UpdateInfo> = withContext(Dispatchers.IO) {
-        try {
-            // Method 1: Try GitHub REST API
-            val apiResult = checkViaGitHubApi()
-            if (apiResult.isSuccess) {
-                return@withContext apiResult
-            }
-
-            // Method 2: Fallback to GitHub Web Redirect (bypasses GitHub API Rate Limit 403)
-            val webResult = checkViaWebRedirect()
-            if (webResult.isSuccess) {
-                return@withContext webResult
-            }
-
-            return@withContext Result.failure(
-                apiResult.exceptionOrNull() ?: webResult.exceptionOrNull() ?: Exception("Güncelleme bilgisi alınamadı")
-            )
-        } catch (e: Exception) {
-            Result.failure(e)
+        val cfg = com.hasanege.materialtv.panel.PanelClient.refresh(context)
+            ?: return@withContext Result.failure(Exception("Couldn't reach the update server"))
+        val u = cfg.update
+        if (u == null || !u.isNewer) {
+            return@withContext Result.success(UpdateInfo(false, BuildConfig.VERSION_NAME, "", ""))
         }
+        Result.success(
+            UpdateInfo(
+                hasUpdate = true,
+                latestVersion = u.versionName.ifBlank { u.versionCode.toString() },
+                downloadUrl = u.bestUrl(),
+                releaseNotes = u.changelog
+            )
+        )
     }
 
     private fun checkViaGitHubApi(): Result<UpdateInfo> {
