@@ -49,13 +49,14 @@ class CatalogSyncManager @Inject constructor(
             }
         }
         
+        // Live TV first so channels appear quickly; the big film/series lists follow
+        syncCategories(ContentType.LIVE, profileId, username, password)
+        syncLiveStreams(profileId, username, password)
+
         syncCategories(ContentType.VOD, profileId, username, password)
         syncCategories(ContentType.SERIES, profileId, username, password)
-        syncCategories(ContentType.LIVE, profileId, username, password)
-        
         syncVodStreams(profileId, username, password)
         syncSeriesStreams(profileId, username, password)
-        syncLiveStreams(profileId, username, password)
     }
 
     private suspend fun syncCategories(type: ContentType, profileId: String, username: String, password: String) {

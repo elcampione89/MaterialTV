@@ -1,6 +1,7 @@
 @file:OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
 package com.hasanege.materialtv.repository
 
+import kotlinx.coroutines.flow.conflate
 import com.hasanege.materialtv.data.entities.ContentType
 import com.hasanege.materialtv.mapper.XtreamMappers.toCategory
 import com.hasanege.materialtv.mapper.XtreamMappers.toLiveStream
@@ -71,7 +72,7 @@ class XtreamRepository @javax.inject.Inject constructor(
     ): kotlinx.coroutines.flow.Flow<com.hasanege.materialtv.network.Resource<List<VodItem>>> = channelFlow {
         send(com.hasanege.materialtv.network.Resource.Loading)
         
-        catalogRepository.observeAllContents(ContentType.VOD, username).collect { entities ->
+        catalogRepository.observeAllContents(ContentType.VOD, username).conflate().collect { entities ->
             val items = entities.map { it.toVodItem() }
             if (categoryId != null && categoryId != "all") {
                 send(com.hasanege.materialtv.network.Resource.Success(items.filter { it.categoryId == categoryId }))
@@ -94,7 +95,7 @@ class XtreamRepository @javax.inject.Inject constructor(
     ): kotlinx.coroutines.flow.Flow<com.hasanege.materialtv.network.Resource<List<SeriesItem>>> = channelFlow {
         send(com.hasanege.materialtv.network.Resource.Loading)
 
-        catalogRepository.observeAllContents(ContentType.SERIES, username).collect { entities ->
+        catalogRepository.observeAllContents(ContentType.SERIES, username).conflate().collect { entities ->
             val items = entities.map { it.toSeriesItem() }
             if (categoryId != null && categoryId != "all") {
                 send(com.hasanege.materialtv.network.Resource.Success(items.filter { it.categoryId == categoryId }))
@@ -117,7 +118,7 @@ class XtreamRepository @javax.inject.Inject constructor(
     ): kotlinx.coroutines.flow.Flow<com.hasanege.materialtv.network.Resource<List<LiveStream>>> = channelFlow {
         send(com.hasanege.materialtv.network.Resource.Loading)
 
-        catalogRepository.observeAllContents(ContentType.LIVE, username).collect { entities ->
+        catalogRepository.observeAllContents(ContentType.LIVE, username).conflate().collect { entities ->
             val items = entities.map { it.toLiveStream() }
             if (categoryId != null && categoryId != "all") {
                 send(com.hasanege.materialtv.network.Resource.Success(items.filter { it.categoryId == categoryId }))

@@ -288,56 +288,69 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    // Panel build: filtering used to rerun (and do an O(items x categories) lookup) on every database
+    // emission during sync, which took minutes on a Firestick. Now it's debounced, cancels stale runs,
+    // uses id maps, and drops categories hidden by the panel before grouping.
+    private var filterJob: Job? = null
+
     private suspend fun applyFilters() {
-        withContext(Dispatchers.Default) {
-            // Movies
-            val filteredMovies = _allMovies.filter { movie ->
-                (selectedMovieCategoryId == null || movie.categoryId == selectedMovieCategoryId) && movie.name?.contains(searchQuery, ignoreCase = true) ?: false
-            }
-            withContext(Dispatchers.Main) {
-                moviesState = UiState.Success(filteredMovies)
-            }
+        filterJob?.cancel()
+        filterJob = viewModelScope.launch(Dispatchers.Default) {
+            delay(250)
+            runFilters()
+        }
+    }
 
-            val moviesByCategory = filteredMovies
-                .groupBy { movie -> movieCategories.find { it.categoryId == movie.categoryId } }
-                .filterKeys { it != null }
-                .mapKeys { it.key!! }
-            withContext(Dispatchers.Main) {
-                moviesByCategoriesState = UiState.Success(moviesByCategory)
-            }
+    private suspend fun runFilters() {
+        val q = searchQuery
+        fun nameOk(name: String?): Boolean = q.isBlank() || (name?.contains(q, ignoreCase = true) ?: false)
+        fun visibleMap(cats: List<Category>): Map<String, Category> =
+            cats.filter { !com.hasanege.materialtv.panel.CategoryRules.isHidden(it.categoryName) }.associateBy { it.categoryId }
 
-            // Series
-            val filteredSeries = _allSeries.filter { series ->
-                (selectedSeriesCategoryId == null || series.categoryId == selectedSeriesCategoryId) && series.name?.contains(searchQuery, ignoreCase = true) ?: false
-            }
-            withContext(Dispatchers.Main) {
-                seriesState = UiState.Success(filteredSeries)
-            }
+        // Movies
+        val movieCatMap = visibleMap(movieCategories)
+        val filteredMovies = _allMovies.filter { movie ->
+            (selectedMovieCategoryId == null || movie.categoryId == selectedMovieCategoryId) && nameOk(movie.name)
+        }
+        val moviesByCategory = LinkedHashMap<Category, MutableList<VodItem>>()
+        for (m in filteredMovies) {
+            val c = movieCatMap[m.categoryId ?: continue] ?: continue
+            moviesByCategory.getOrPut(c) { mutableListOf() }.add(m)
+        }
+        withContext(Dispatchers.Main) {
+            moviesState = UiState.Success(filteredMovies)
+            moviesByCategoriesState = UiState.Success(moviesByCategory)
+        }
 
-            val seriesByCategory = filteredSeries
-                .groupBy { series -> seriesCategories.find { it.categoryId == series.categoryId } }
-                .filterKeys { it != null }
-                .mapKeys { it.key!! }
-            withContext(Dispatchers.Main) {
-                seriesByCategoriesState = UiState.Success(seriesByCategory)
-            }
+        // Series
+        val seriesCatMap = visibleMap(seriesCategories)
+        val filteredSeries = _allSeries.filter { series ->
+            (selectedSeriesCategoryId == null || series.categoryId == selectedSeriesCategoryId) && nameOk(series.name)
+        }
+        val seriesByCategory = LinkedHashMap<Category, MutableList<SeriesItem>>()
+        for (it in filteredSeries) {
+            val c = seriesCatMap[it.categoryId ?: continue] ?: continue
+            seriesByCategory.getOrPut(c) { mutableListOf() }.add(it)
+        }
+        withContext(Dispatchers.Main) {
+            seriesState = UiState.Success(filteredSeries)
+            seriesByCategoriesState = UiState.Success(seriesByCategory)
+        }
 
-            // Live TV
-            val filteredLive = _allLiveStreams.filter { stream ->
-                (selectedLiveCategoryId == null || stream.categoryId == selectedLiveCategoryId) && stream.name?.contains(searchQuery, ignoreCase = true) ?: false
-            }
-            withContext(Dispatchers.Main) {
-                liveState = UiState.Success(filteredLive)
-            }
-
-            val liveByCategory = filteredLive
-                .groupBy { stream -> liveCategories.find { it.categoryId == stream.categoryId } }
-                .filterKeys { it != null }
-                .mapKeys { it.key!! }
-            withContext(Dispatchers.Main) {
-                liveByCategoriesState = UiState.Success(liveByCategory)
-                loadContinueWatching()
-            }
+        // Live TV
+        val liveCatMap = visibleMap(liveCategories)
+        val filteredLive = _allLiveStreams.filter { stream ->
+            (selectedLiveCategoryId == null || stream.categoryId == selectedLiveCategoryId) && nameOk(stream.name)
+        }
+        val liveByCategory = LinkedHashMap<Category, MutableList<LiveStream>>()
+        for (st in filteredLive) {
+            val c = liveCatMap[st.categoryId ?: continue] ?: continue
+            liveByCategory.getOrPut(c) { mutableListOf() }.add(st)
+        }
+        withContext(Dispatchers.Main) {
+            liveState = UiState.Success(filteredLive)
+            liveByCategoriesState = UiState.Success(liveByCategory)
+            loadContinueWatching()
         }
     }
 
