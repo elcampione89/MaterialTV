@@ -183,6 +183,14 @@ if ($action !== '') {
             $d['settings']['plex_enabled'] = !empty($_POST['plex_enabled']);
             save_data($d); $flash = 'Settings saved.';
             break;
+        case 'categories_save':
+            $d['categories']['top'] = lines_to_list((string)($_POST['top'] ?? ''));
+            $d['categories']['bottom'] = lines_to_list((string)($_POST['bottom'] ?? ''));
+            $d['categories']['hide'] = lines_to_list((string)($_POST['hide'] ?? ''));
+            $d['categories']['hide_unlisted'] = !empty($_POST['hide_unlisted']);
+            $d['categories']['sort'] = ($_POST['sort'] ?? '') === 'az' ? 'az' : 'provider';
+            save_data($d); $flash = 'Category rules saved. Apps pick them up next time they open.';
+            break;
         case 'password_change':
             $p = (string)($_POST['pass'] ?? '');
             if (strlen($p) < 6) { $error = 'Password must be at least 6 characters.'; break; }
@@ -192,7 +200,7 @@ if ($action !== '') {
 }
 
 $tab = $_GET['tab'] ?? 'servers';
-$tabs = ['servers' => 'Servers', 'update' => 'App update', 'messages' => 'Messages', 'settings' => 'Settings'];
+$tabs = ['servers' => 'Servers', 'categories' => 'Categories', 'update' => 'App update', 'messages' => 'Messages', 'settings' => 'Settings'];
 if (!isset($tabs[$tab])) { $tab = 'servers'; }
 
 render_header($tabs[$tab]);
@@ -235,6 +243,31 @@ render_header($tabs[$tab]);
             <label>Name<input name="name" placeholder="Main server" required></label>
             <label>URL<input name="url" placeholder="http://line.example.com:8080" required></label>
             <button>Add</button>
+        </form>
+    </div>
+
+<?php elseif ($tab === 'categories'): $c = $d['categories']; ?>
+    <div class="card">
+        <h2>Category order</h2>
+        <p class="muted">One rule per line. Each rule matches any category <b>containing</b> that text (case doesn't matter).
+            Start a rule with <code>^</code> to match only names that <b>start</b> with it. For example, <code>^UK</code> catches "UK | Sports" but not "UKRAINE".
+            Rules apply to Live, Movies and Series on every device.</p>
+        <form method="post">
+            <input type="hidden" name="csrf" value="<?= h($csrf) ?>">
+            <input type="hidden" name="action" value="categories_save">
+            <label>Show first, in this order
+                <textarea name="top" rows="8" placeholder="^UK&#10;UK SPORTS&#10;^UK| ENTERTAINMENT&#10;NEWS"><?= h(implode("\n", $c['top'])) ?></textarea></label>
+            <label>Show last, in this order
+                <textarea name="bottom" rows="4" placeholder="24/7"><?= h(implode("\n", $c['bottom'])) ?></textarea></label>
+            <label>Hide completely
+                <textarea name="hide" rows="5" placeholder="ADULT&#10;^AR&#10;^TR"><?= h(implode("\n", $c['hide'])) ?></textarea></label>
+            <label class="check"><input type="checkbox" name="hide_unlisted" value="1" <?= $c['hide_unlisted'] ? 'checked' : '' ?>> Hide every category that isn't in the "first" or "last" lists</label>
+            <label>Everything in between
+                <select name="sort" style="display:block;width:100%;margin-top:4px;padding:11px 12px;background:#14121a;border:1px solid var(--line);border-radius:12px;color:var(--txt);font:inherit">
+                    <option value="provider" <?= $c['sort'] !== 'az' ? 'selected' : '' ?>>Keep the provider's order</option>
+                    <option value="az" <?= $c['sort'] === 'az' ? 'selected' : '' ?>>Sort A–Z</option>
+                </select></label>
+            <button>Save rules</button>
         </form>
     </div>
 

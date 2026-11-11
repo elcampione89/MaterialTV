@@ -46,7 +46,12 @@ data class PanelConfig(
     val plexEnabled: Boolean,
     val servers: List<PanelServer>,
     val update: PanelUpdate?,
-    val messages: List<PanelMessage>
+    val messages: List<PanelMessage>,
+    val catTop: List<String> = emptyList(),
+    val catBottom: List<String> = listOf("24/7"),
+    val catHide: List<String> = emptyList(),
+    val catHideUnlisted: Boolean = false,
+    val catSortAz: Boolean = false
 ) {
     companion object {
         val DEFAULT = PanelConfig("Ultra Player", true, true, true, emptyList(), null, emptyList())
@@ -81,6 +86,11 @@ data class PanelConfig(
                     force = u.optBoolean("force", false)
                 )
             }
+            fun strList(key: String, default: List<String>): List<String> {
+                val arr = j.optJSONObject("categories")?.optJSONArray(key) ?: return default
+                return (0 until arr.length()).map { arr.optString(it).trim() }.filter { it.isNotEmpty() }
+            }
+            val cats = j.optJSONObject("categories")
             return PanelConfig(
                 appName = j.optString("app_name", "Ultra Player").ifBlank { "Ultra Player" },
                 allowCustomDns = j.optBoolean("allow_custom_dns", true),
@@ -88,7 +98,12 @@ data class PanelConfig(
                 plexEnabled = j.optBoolean("plex_enabled", true),
                 servers = servers,
                 update = update,
-                messages = messages
+                messages = messages,
+                catTop = strList("top", emptyList()),
+                catBottom = strList("bottom", listOf("24/7")),
+                catHide = strList("hide", emptyList()),
+                catHideUnlisted = cats?.optBoolean("hide_unlisted", false) ?: false,
+                catSortAz = cats?.optString("sort") == "az"
             )
         }
     }

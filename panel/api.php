@@ -42,4 +42,11 @@ echo json_encode([
         'force' => (bool)$d['update']['force'],
     ],
     'messages' => $messages,
+    'categories' => [
+        'top' => array_values(array_map('strval', $d['categories']['top'])),
+        'bottom' => array_values(array_map('strval', $d['categories']['bottom'])),
+        'hide' => array_values(array_map('strval', $d['categories']['hide'])),
+        'hide_unlisted' => (bool)$d['categories']['hide_unlisted'],
+        'sort' => $d['categories']['sort'] === 'az' ? 'az' : 'provider',
+    ],
 ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);

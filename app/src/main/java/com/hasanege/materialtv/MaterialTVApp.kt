@@ -1131,12 +1131,13 @@ fun CategoryScreen(
                             is UiState.Loading -> item { CenteredProgressBar() }
                             is UiState.Success -> {
                                 val allMovies = moviesByCategoriesState.data.values.flatten()
+                                val providerIdx = viewModel.movieCategories.withIndex().associate { it.value.categoryId to it.index }
                                 val hiddenSet = viewModel.hiddenCategoryIdsMovies
                                 val customOrder = viewModel.orderedCategoryIdsMovies
                                 val orderMap = customOrder.withIndex().associate { it.value to it.index }
                                 
                                 val filteredData = moviesByCategoriesState.data.entries
-                                    .filter { it.value.isNotEmpty() && !hiddenSet.contains(it.key.categoryId ?: "") }
+                                    .filter { it.value.isNotEmpty() && !hiddenSet.contains(it.key.categoryId ?: "") && !com.hasanege.materialtv.panel.CategoryRules.isHidden(it.key.categoryName) }
                                     .sortedWith { a, b ->
                                         val posA = orderMap[a.key.categoryId ?: ""]
                                         val posB = orderMap[b.key.categoryId ?: ""]
@@ -1147,10 +1148,10 @@ fun CategoryScreen(
                                         } else if (posB != null) {
                                             1
                                         } else {
-                                            (a.key.categoryName ?: "").compareTo(b.key.categoryName ?: "", ignoreCase = true)
+                                            com.hasanege.materialtv.panel.CategoryRules.fallbackCompare(a.key.categoryName, b.key.categoryName, providerIdx[a.key.categoryId], providerIdx[b.key.categoryId])
                                         }
                                     }
-                                    .sortedBy { categoryPriority(it.key.categoryName) } // 24/7 categories last
+                                    .sortedBy { com.hasanege.materialtv.panel.CategoryRules.rank(it.key.categoryName) } // panel order
 
                                 // Hero Banner: "İzlemeye DEVAM ET" (Only render item if continueWatchingList is not empty)
                                 if (continueWatchingList.isNotEmpty()) {
@@ -1195,12 +1196,13 @@ fun CategoryScreen(
                             is UiState.Loading -> item { CenteredProgressBar() }
                             is UiState.Success -> {
                                 val allSeries = seriesByCategoriesState.data.values.flatten()
+                                val providerIdx = viewModel.seriesCategories.withIndex().associate { it.value.categoryId to it.index }
                                 val hiddenSet = viewModel.hiddenCategoryIdsSeries
                                 val customOrder = viewModel.orderedCategoryIdsSeries
                                 val orderMap = customOrder.withIndex().associate { it.value to it.index }
 
                                 val filteredData = seriesByCategoriesState.data.entries
-                                    .filter { it.value.isNotEmpty() && !hiddenSet.contains(it.key.categoryId ?: "") }
+                                    .filter { it.value.isNotEmpty() && !hiddenSet.contains(it.key.categoryId ?: "") && !com.hasanege.materialtv.panel.CategoryRules.isHidden(it.key.categoryName) }
                                     .sortedWith { a, b ->
                                         val posA = orderMap[a.key.categoryId ?: ""]
                                         val posB = orderMap[b.key.categoryId ?: ""]
@@ -1211,10 +1213,10 @@ fun CategoryScreen(
                                         } else if (posB != null) {
                                             1
                                         } else {
-                                            (a.key.categoryName ?: "").compareTo(b.key.categoryName ?: "", ignoreCase = true)
+                                            com.hasanege.materialtv.panel.CategoryRules.fallbackCompare(a.key.categoryName, b.key.categoryName, providerIdx[a.key.categoryId], providerIdx[b.key.categoryId])
                                         }
                                     }
-                                    .sortedBy { categoryPriority(it.key.categoryName) } // 24/7 categories last
+                                    .sortedBy { com.hasanege.materialtv.panel.CategoryRules.rank(it.key.categoryName) } // panel order
 
                                 // Hero Banner: "İzlemeye DEVAM ET" (Only render item if continueWatchingList is not empty)
                                 if (continueWatchingList.isNotEmpty()) {
@@ -1263,12 +1265,13 @@ fun CategoryScreen(
                         when (val liveByCategoriesState = viewModel.liveByCategoriesState) {
                             is UiState.Loading -> item { CenteredProgressBar() }
                             is UiState.Success -> {
+                                val providerIdx = viewModel.liveCategories.withIndex().associate { it.value.categoryId to it.index }
                                 val hiddenSet = viewModel.hiddenCategoryIdsLive
                                 val customOrder = viewModel.orderedCategoryIdsLive
                                 val orderMap = customOrder.withIndex().associate { it.value to it.index }
 
                                 val filteredData = liveByCategoriesState.data.entries
-                                    .filter { it.value.isNotEmpty() && !hiddenSet.contains(it.key.categoryId ?: "") }
+                                    .filter { it.value.isNotEmpty() && !hiddenSet.contains(it.key.categoryId ?: "") && !com.hasanege.materialtv.panel.CategoryRules.isHidden(it.key.categoryName) }
                                     .sortedWith { a, b ->
                                         val posA = orderMap[a.key.categoryId ?: ""]
                                         val posB = orderMap[b.key.categoryId ?: ""]
@@ -1279,10 +1282,10 @@ fun CategoryScreen(
                                         } else if (posB != null) {
                                             1
                                         } else {
-                                            (a.key.categoryName ?: "").compareTo(b.key.categoryName ?: "", ignoreCase = true)
+                                            com.hasanege.materialtv.panel.CategoryRules.fallbackCompare(a.key.categoryName, b.key.categoryName, providerIdx[a.key.categoryId], providerIdx[b.key.categoryId])
                                         }
                                     }
-                                    .sortedBy { categoryPriority(it.key.categoryName) } // 24/7 categories last
+                                    .sortedBy { com.hasanege.materialtv.panel.CategoryRules.rank(it.key.categoryName) } // panel order
 
                                 // Hero Banner: "İzlemeye DEVAM ET" for Live TV tab (Only render item if continueWatchingList is not empty)
                                 if (continueWatchingList.isNotEmpty()) {
@@ -1376,7 +1379,13 @@ fun CategoryChips(viewModel: HomeViewModel, selectedTab: Int) {
                 border = null
             )
         }
-        items(categories.sortedBy { categoryPriority(it.categoryName) }, key = { it.categoryId }) { category ->
+        items(
+            categories
+                .filter { !com.hasanege.materialtv.panel.CategoryRules.isHidden(it.categoryName) }
+                .let { list -> if (com.hasanege.materialtv.panel.CategoryRules.alphabetical) list.sortedBy { it.categoryName.lowercase() } else list }
+                .sortedBy { com.hasanege.materialtv.panel.CategoryRules.rank(it.categoryName) },
+            key = { it.categoryId }
+        ) { category ->
             val isSelected = category.categoryId == selectedCategoryId
             FilterChip(
                 selected = isSelected,
@@ -2310,11 +2319,12 @@ fun ManageCategoriesBottomSheet(
 
     val sortedCategories = remember(categoryList, customOrder) {
         run {
+        val visible = categoryList.filter { !com.hasanege.materialtv.panel.CategoryRules.isHidden(it.categoryName) }
         if (customOrder.isEmpty()) {
-            categoryList.sortedBy { it.categoryName?.lowercase() ?: "" }
+            if (com.hasanege.materialtv.panel.CategoryRules.alphabetical) visible.sortedBy { it.categoryName?.lowercase() ?: "" } else visible
         } else {
             val orderMap = customOrder.withIndex().associate { it.value to it.index }
-            categoryList.sortedWith { a, b ->
+            visible.sortedWith { a, b ->
                 val posA = orderMap[a.categoryId ?: ""]
                 val posB = orderMap[b.categoryId ?: ""]
                 if (posA != null && posB != null) {
@@ -2328,7 +2338,7 @@ fun ManageCategoriesBottomSheet(
                 }
             }
         }
-    }.sortedBy { categoryPriority(it.categoryName) }
+    }.sortedBy { com.hasanege.materialtv.panel.CategoryRules.rank(it.categoryName) }
     }
 
     ModalBottomSheet(
@@ -2490,11 +2500,4 @@ fun ManageCategoriesBottomSheet(
             androidx.compose.foundation.layout.Spacer(Modifier.height(16.dp))
         }
     }
-}
-
-
-/** Panel build: categories with 24/7 in the name always sort to the bottom (stable, keeps the user's order otherwise). */
-fun categoryPriority(name: String?): Int {
-    val n = name?.lowercase() ?: return 0
-    return if (n.contains("24/7") || n.contains("24-7") || n.contains("24x7") || Regex("""(^|[^0-9])247([^0-9]|$)""").containsMatchIn(n)) 1 else 0
 }

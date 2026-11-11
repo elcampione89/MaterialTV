@@ -43,6 +43,13 @@ function default_data(): array {
             'force' => false,
         ],
         'messages' => [],     // [{id, title, body, active, once, created}]
+        'categories' => [
+            'top' => [],          // patterns, in order, shown first
+            'bottom' => ['24/7'], // patterns, in order, shown last
+            'hide' => [],         // patterns never shown
+            'hide_unlisted' => false,
+            'sort' => 'provider', // provider | az (order inside each group)
+        ],
     ];
 }
 
@@ -52,8 +59,16 @@ function load_data(): array {
     $raw = file_get_contents(DATA_FILE);
     $d = json_decode($raw ?: '', true);
     if (!is_array($d)) { return default_data(); }
-    // merge in any keys added in newer versions
-    return array_replace_recursive(default_data(), $d);
+    // merge in any keys added in newer versions (shallow per section, so saved lists - even empty ones - win)
+    $out = default_data();
+    foreach ($d as $k => $v) {
+        if (isset($out[$k]) && is_array($out[$k]) && is_array($v) && array_keys($out[$k]) !== range(0, count($out[$k]) - 1)) {
+            $out[$k] = array_merge($out[$k], $v);
+        } else {
+            $out[$k] = $v;
+        }
+    }
+    return $out;
 }
 
 function save_data(array $d): void {
@@ -75,6 +90,15 @@ function save_auth(string $user, string $pass): void {
         'user' => $user,
         'hash' => password_hash($pass, PASSWORD_DEFAULT),
     ]), LOCK_EX);
+}
+
+function lines_to_list(string $txt): array {
+    $out = [];
+    foreach (preg_split('/\r\n|\r|\n/', $txt) as $l) {
+        $l = trim($l);
+        if ($l !== '' && !in_array($l, $out, true)) { $out[] = $l; }
+    }
+    return $out;
 }
 
 function h(?string $s): string { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
