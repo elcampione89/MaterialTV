@@ -1,4 +1,5 @@
 name: Build APKs
+# Signed with the release key from repo secrets (MTV_KEYSTORE_B64 etc.)
 
 on:
   push:
