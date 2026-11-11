@@ -1150,7 +1150,7 @@ fun CategoryScreen(
                                             (a.key.categoryName ?: "").compareTo(b.key.categoryName ?: "", ignoreCase = true)
                                         }
                                     }
-                                    .sortedBy { categoryPriority(it.key.categoryName) } // 24/7 categories first
+                                    .sortedBy { categoryPriority(it.key.categoryName) } // 24/7 categories last
 
                                 // Hero Banner: "İzlemeye DEVAM ET" (Only render item if continueWatchingList is not empty)
                                 if (continueWatchingList.isNotEmpty()) {
@@ -1214,7 +1214,7 @@ fun CategoryScreen(
                                             (a.key.categoryName ?: "").compareTo(b.key.categoryName ?: "", ignoreCase = true)
                                         }
                                     }
-                                    .sortedBy { categoryPriority(it.key.categoryName) } // 24/7 categories first
+                                    .sortedBy { categoryPriority(it.key.categoryName) } // 24/7 categories last
 
                                 // Hero Banner: "İzlemeye DEVAM ET" (Only render item if continueWatchingList is not empty)
                                 if (continueWatchingList.isNotEmpty()) {
@@ -1282,7 +1282,7 @@ fun CategoryScreen(
                                             (a.key.categoryName ?: "").compareTo(b.key.categoryName ?: "", ignoreCase = true)
                                         }
                                     }
-                                    .sortedBy { categoryPriority(it.key.categoryName) } // 24/7 categories first
+                                    .sortedBy { categoryPriority(it.key.categoryName) } // 24/7 categories last
 
                                 // Hero Banner: "İzlemeye DEVAM ET" for Live TV tab (Only render item if continueWatchingList is not empty)
                                 if (continueWatchingList.isNotEmpty()) {
@@ -2493,8 +2493,8 @@ fun ManageCategoriesBottomSheet(
 }
 
 
-/** Panel build: categories with 24/7 in the name always sort to the top (stable, keeps the user's order otherwise). */
+/** Panel build: categories with 24/7 in the name always sort to the bottom (stable, keeps the user's order otherwise). */
 fun categoryPriority(name: String?): Int {
-    val n = name?.lowercase() ?: return 1
-    return if (n.contains("24/7") || n.contains("24-7") || n.contains("24x7") || Regex("""(^|[^0-9])247([^0-9]|$)""").containsMatchIn(n)) 0 else 1
+    val n = name?.lowercase() ?: return 0
+    return if (n.contains("24/7") || n.contains("24-7") || n.contains("24x7") || Regex("""(^|[^0-9])247([^0-9]|$)""").containsMatchIn(n)) 1 else 0
 }
