@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import com.hasanege.materialtv.utils.tvDpadScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
@@ -53,9 +54,13 @@ fun CustomizationScreen(onBackClick: () -> Unit) {
     var isVisible by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { isVisible = true }
 
+    // TV: Back button instead of the top-left arrow, and D-pad always moves/scrolls
+    val customIsTv = remember { com.hasanege.materialtv.utils.TvUtils.isHardwareTv(context) }
+    val customScroll = rememberScrollState()
+
     Scaffold(
         topBar = {
-            LargeTopAppBar(
+            if (customIsTv) TopAppBar(title = { Text(stringResource(R.string.customization_title)) }) else LargeTopAppBar(
                 title = { Text(stringResource(R.string.customization_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
@@ -72,7 +77,8 @@ fun CustomizationScreen(onBackClick: () -> Unit) {
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
-                .verticalScroll(rememberScrollState())
+                .tvDpadScroll(customIsTv, customScroll)
+                .verticalScroll(customScroll)
                 .padding(paddingValues)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -191,7 +197,7 @@ fun CustomizationScreen(onBackClick: () -> Unit) {
             onDismiss = { showFontDialog = false },
             onSelect = { 
                 if (it == loadCustomLabel) {
-                    fontLauncher.launch("*/*")
+                    runCatching { fontLauncher.launch("*/*") }
                 } else {
                     viewModel.setFontFamily(it)
                 }
