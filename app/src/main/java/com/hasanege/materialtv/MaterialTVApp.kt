@@ -723,11 +723,14 @@ fun HomeScreen(
         // 1. Content Pager (Bottom Layer)
         val tabHeightDp = 72.dp
         
+        val pagerIsTv = remember { com.hasanege.materialtv.utils.TvUtils.isHardwareTv(context) }
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.fillMaxSize(),
             pageSpacing = 0.dp,
-            beyondViewportPageCount = 1 
+            // TV: no swipe-paging (it fights the remote) and only build the visible tab
+            userScrollEnabled = !pagerIsTv,
+            beyondViewportPageCount = if (pagerIsTv) 0 else 1
         ) { page ->
             // Smooth page transition
             val pageOffset = ((pagerState.currentPage - page) + pagerState.currentPageOffsetFraction)
@@ -1006,6 +1009,7 @@ fun CategoryScreen(
     val context = LocalContext.current
     val navController = com.hasanege.materialtv.navigation.LocalNavController.current
     val isRefreshing = viewModel.isRefreshing
+    val isTvDevice = remember { com.hasanege.materialtv.utils.TvUtils.isHardwareTv(context) }
     val scope = rememberCoroutineScope()
 
     val onPinContinueItem = { item: ContinueWatchingItem ->
@@ -1154,7 +1158,7 @@ fun CategoryScreen(
                                     .sortedBy { com.hasanege.materialtv.panel.CategoryRules.rank(it.key.categoryName) } // panel order
 
                                 // Hero Banner: "İzlemeye DEVAM ET" (Only render item if continueWatchingList is not empty)
-                                if (continueWatchingList.isNotEmpty()) {
+                                if (continueWatchingList.isNotEmpty() && !isTvDevice) {
                                     item(key = "hero_carousel_movies") {
                                         HeroCarousel(
                                             items = continueWatchingList,
@@ -1219,7 +1223,7 @@ fun CategoryScreen(
                                     .sortedBy { com.hasanege.materialtv.panel.CategoryRules.rank(it.key.categoryName) } // panel order
 
                                 // Hero Banner: "İzlemeye DEVAM ET" (Only render item if continueWatchingList is not empty)
-                                if (continueWatchingList.isNotEmpty()) {
+                                if (continueWatchingList.isNotEmpty() && !isTvDevice) {
                                     item(key = "hero_carousel_series") {
                                         HeroCarousel(
                                             items = continueWatchingList,
@@ -1288,7 +1292,7 @@ fun CategoryScreen(
                                     .sortedBy { com.hasanege.materialtv.panel.CategoryRules.rank(it.key.categoryName) } // panel order
 
                                 // Hero Banner: "İzlemeye DEVAM ET" for Live TV tab (Only render item if continueWatchingList is not empty)
-                                if (continueWatchingList.isNotEmpty()) {
+                                if (continueWatchingList.isNotEmpty() && !isTvDevice) {
                                     item(key = "hero_carousel_live") {
                                         HeroCarousel(
                                             items = continueWatchingList,
@@ -1323,7 +1327,22 @@ fun CategoryScreen(
                                         },
                                         key = { it.streamId ?: 0 }
                                     ) { liveStream ->
-                                        navController.navigate(
+                                        val tvLiveUrl = com.hasanege.materialtv.network.SessionManager.let { sm ->
+                                            if (sm.loginType == com.hasanege.materialtv.network.SessionManager.LoginType.XTREAM && sm.serverUrl != null && liveStream.streamId != null)
+                                                "${sm.serverUrl!!.trimEnd('/')}/live/${sm.username}/${sm.password}/${liveStream.streamId}.ts"
+                                            else null
+                                        }
+                                        if (isTvDevice && tvLiveUrl != null) {
+                                            // TV: OK on a channel plays it straight away
+                                            context.startActivity(
+                                                android.content.Intent(context, com.hasanege.materialtv.PlayerActivity::class.java).apply {
+                                                    putExtra("url", tvLiveUrl)
+                                                    putExtra("TITLE", liveStream.name ?: "")
+                                                    putExtra("LIVE_STREAM_ID", liveStream.streamId ?: -1)
+                                                    putExtra("STREAM_ICON", liveStream.streamIcon)
+                                                }
+                                            )
+                                        } else navController.navigate(
                                             com.hasanege.materialtv.navigation.Screen.LiveDetail.createRoute(
                                                 liveStream.streamId ?: -1,
                                                 liveStream.name ?: "",

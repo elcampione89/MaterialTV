@@ -127,7 +127,7 @@ private val AmoledDarkColors = darkColorScheme(
     surfaceContainerLowest = androidx.compose.ui.graphics.Color(0xFF000000)
 )
 
-@OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class, androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 fun MaterialTVTheme(
   dynamicColor: Boolean = true,
@@ -207,11 +207,31 @@ fun MaterialTVTheme(
       }
   }
 
+  // TV mode (Firestick / Android TV): make the remote's focus obvious everywhere and tone down motion
+  val isTv = androidx.compose.runtime.remember { com.hasanege.materialtv.utils.TvUtils.isHardwareTv(context) }
+
   androidx.compose.material3.MaterialExpressiveTheme(
     colorScheme = colorScheme,
     typography = dynamicTypography,
     shapes = Shapes,
-    motionScheme = androidx.compose.material3.MotionScheme.expressive(),
-    content = content
+    motionScheme = if (isTv) androidx.compose.material3.MotionScheme.standard() else androidx.compose.material3.MotionScheme.expressive(),
+    content = {
+      if (isTv) {
+        androidx.compose.runtime.CompositionLocalProvider(
+          androidx.compose.material3.LocalRippleConfiguration provides androidx.compose.material3.RippleConfiguration(
+            color = androidx.compose.ui.graphics.Color.White,
+            rippleAlpha = androidx.compose.material.ripple.RippleAlpha(
+              draggedAlpha = 0.16f,
+              focusedAlpha = 0.42f,
+              hoveredAlpha = 0.16f,
+              pressedAlpha = 0.30f
+            )
+          ),
+          content = content
+        )
+      } else {
+        content()
+      }
+    }
   )
 }

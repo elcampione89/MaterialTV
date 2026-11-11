@@ -34,6 +34,12 @@ object SyncScheduler {
             syncRequest
         )
 
+        // TV sticks are low on CPU/RAM: skip the background metadata enrichment there
+        if (com.hasanege.materialtv.utils.TvUtils.isHardwareTv(context)) {
+            WorkManager.getInstance(context).cancelUniqueWork("details_enrichment_work")
+            return
+        }
+
         val enrichmentRequest = PeriodicWorkRequestBuilder<DetailsEnrichmentWorker>(6, TimeUnit.HOURS)
             .setConstraints(constraints)
             .setInputData(inputData)
