@@ -22,9 +22,9 @@
     <string name="settings_feature_performance_desc">Hız düşüşünde otomatik yeniden başlatma</string>
 
     <!-- Uygulama Adı -->
-    <string name="app_name">MaterialTV</string>
-    <string name="app_name_material">Material</string>
-    <string name="app_name_tv">TV</string>
+    <string name="app_name">Ultra Player</string>
+    <string name="app_name_material">Ultra</string>
+    <string name="app_name_tv">\u0020Player</string>
 
     <!-- Ana Navigasyon -->
     <string name="nav_home">Ana Sayfa</string>
@@ -61,7 +61,7 @@
     <string name="search_field_label">Film, dizi ve canlı TV ara</string>
 
     <!-- Giriş -->
-    <string name="login_title">MaterialTV Giriş</string>
+    <string name="login_title">Ultra Player Giriş</string>
     <string name="login_tab_xtream">Xtream Kodları</string>
     <string name="login_tab_m3u">M3U Listesi</string>
     <string name="login_m3u_url_label">M3U Liste URL</string>
@@ -415,7 +415,7 @@
     <string name="downloads_tab_completed">Tamamlandı</string>
     <string name="downloads_tab_waiting">Bekliyor</string>
     <string name="downloads_storage_access_required">Depolama Erişimi Gerekli</string>
-    <string name="downloads_storage_access_message">İndirilen dosyaları görmek için \'Tüm dosyalara erişim\' iznini vermeniz gerekiyor. Bu izni MaterialTV Ayarlarından etkinleştirin.</string>
+    <string name="downloads_storage_access_message">İndirilen dosyaları görmek için \'Tüm dosyalara erişim\' iznini vermeniz gerekiyor. Bu izni Ultra Player Ayarlarından etkinleştirin.</string>
     <string name="downloads_open_settings">Ayarları Aç</string>
     <string name="downloads_later">Sonra</string>
 

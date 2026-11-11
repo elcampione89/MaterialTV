@@ -22,9 +22,9 @@
     <string name="settings_feature_performance_desc">رفتار میں کمی پر خودکار دوبارہ شروع اور کم تاخیر</string>
 
     <!-- App Name -->
-    <string name="app_name">MaterialTV</string>
-    <string name="app_name_material">Material</string>
-    <string name="app_name_tv">TV</string>
+    <string name="app_name">Ultra Player</string>
+    <string name="app_name_material">Ultra</string>
+    <string name="app_name_tv">\u0020Player</string>
 
     <!-- Main Navigation -->
     <string name="nav_home">ہوم</string>
@@ -61,7 +61,7 @@
     <string name="search_field_label">فلمیں، سیریز اور ٹی وی تلاش کریں</string>
 
     <!-- Login -->
-    <string name="login_title">MaterialTV میں لاگ ان کریں</string>
+    <string name="login_title">Ultra Player میں لاگ ان کریں</string>
     <string name="login_tab_xtream">Xtream کوڈز</string>
     <string name="login_tab_m3u">M3U پلے لسٹ</string>
     <string name="login_m3u_url_label">M3U پلے لسٹ URL</string>
@@ -387,7 +387,7 @@
     <string name="downloads_tab_completed">مکمل ہو گیا</string>
     <string name="downloads_tab_waiting">منتظر</string>
     <string name="downloads_storage_access_required">اسٹوریج تک رسائی درکار ہے</string>
-    <string name="downloads_storage_access_message">ڈاؤن لوڈ کردہ فائلیں دیکھنے کے لیے آپ کو \'تمام فائلوں تک رسائی\' کی اجازت دینی ہوگی۔ اسے MaterialTV کی ترتیبات سے فعال کریں۔</string>
+    <string name="downloads_storage_access_message">ڈاؤن لوڈ کردہ فائلیں دیکھنے کے لیے آپ کو \'تمام فائلوں تک رسائی\' کی اجازت دینی ہوگی۔ اسے Ultra Player کی ترتیبات سے فعال کریں۔</string>
     <string name="downloads_open_settings">ترتیبات کھولیں</string>
     <string name="downloads_later">بعد میں</string>
 

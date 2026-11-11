@@ -22,9 +22,9 @@
     <string name="settings_feature_performance_desc">إعادة تشغيل تلقائية عند انخفاض السرعة وتأخير منخفض</string>
 
     <!-- App Name -->
-    <string name="app_name">MaterialTV</string>
-    <string name="app_name_material">Material</string>
-    <string name="app_name_tv">TV</string>
+    <string name="app_name">Ultra Player</string>
+    <string name="app_name_material">Ultra</string>
+    <string name="app_name_tv">\u0020Player</string>
 
     <!-- Main Navigation -->
     <string name="nav_home">الرئيسية</string>
@@ -61,7 +61,7 @@
     <string name="search_field_label">ابحث عن أفلام، مسلسلات وتلفاز</string>
 
     <!-- Login -->
-    <string name="login_title">تسجيل الدخول إلى MaterialTV</string>
+    <string name="login_title">تسجيل الدخول إلى Ultra Player</string>
     <string name="login_tab_xtream">أكواد Xtream</string>
     <string name="login_tab_m3u">قائمة تشغيل M3U</string>
     <string name="login_m3u_url_label">رابط قائمة M3U</string>
@@ -403,7 +403,7 @@
     <string name="downloads_tab_completed">مكتمل</string>
     <string name="downloads_tab_waiting">قيد الانتظار</string>
     <string name="downloads_storage_access_required">مطلوب الوصول إلى الذاكرة</string>
-    <string name="downloads_storage_access_message">تحتاج إلى تفعيل إذن \'الوصول لجميع الملفات\' لتتمكن من رؤية الملفات المحملة. الرجاء تفعيله من إعدادات MaterialTV.</string>
+    <string name="downloads_storage_access_message">تحتاج إلى تفعيل إذن \'الوصول لجميع الملفات\' لتتمكن من رؤية الملفات المحملة. الرجاء تفعيله من إعدادات Ultra Player.</string>
     <string name="downloads_open_settings">فتح الإعدادات</string>
     <string name="downloads_later">لاحقاً</string>
 

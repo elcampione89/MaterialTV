@@ -68,7 +68,7 @@ data class PlexItem(
  */
 object PlexApi {
     private const val PREFS = "plex"
-    private const val PRODUCT = "MaterialTV"
+    private const val PRODUCT = "Ultra Player"
 
     private val client = OkHttpClient.Builder()
         .connectTimeout(10, TimeUnit.SECONDS)

@@ -1,5 +1,5 @@
 <?php
-// MaterialTV panel - shared helpers. Storage is plain JSON in ./data (no database needed).
+// Ultra Player panel - shared helpers. Storage is plain JSON in ./data (no database needed).
 declare(strict_types=1);
 
 const DATA_DIR = __DIR__ . '/data';
@@ -27,7 +27,7 @@ function ensure_dirs(): void {
 function default_data(): array {
     return [
         'settings' => [
-            'app_name' => 'MaterialTV',
+            'app_name' => 'Ultra Player',
             'allow_custom_dns' => true,
             'allow_m3u' => true,
             'plex_enabled' => true,

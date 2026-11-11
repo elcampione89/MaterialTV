@@ -49,7 +49,7 @@ data class PanelConfig(
     val messages: List<PanelMessage>
 ) {
     companion object {
-        val DEFAULT = PanelConfig("MaterialTV", true, true, true, emptyList(), null, emptyList())
+        val DEFAULT = PanelConfig("Ultra Player", true, true, true, emptyList(), null, emptyList())
 
         fun parse(raw: String): PanelConfig {
             val j = JSONObject(raw)
@@ -82,7 +82,7 @@ data class PanelConfig(
                 )
             }
             return PanelConfig(
-                appName = j.optString("app_name", "MaterialTV").ifBlank { "MaterialTV" },
+                appName = j.optString("app_name", "Ultra Player").ifBlank { "Ultra Player" },
                 allowCustomDns = j.optBoolean("allow_custom_dns", true),
                 allowM3u = j.optBoolean("allow_m3u", true),
                 plexEnabled = j.optBoolean("plex_enabled", true),
@@ -123,7 +123,7 @@ object PanelClient {
         try {
             val req = Request.Builder()
                 .url(BuildConfig.PANEL_URL)
-                .header("User-Agent", "MaterialTV/${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})")
+                .header("User-Agent", "UltraPlayer/${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})")
                 .build()
             client.newCall(req).execute().use { resp ->
                 if (!resp.isSuccessful) return@withContext null

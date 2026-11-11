@@ -187,14 +187,14 @@ class UpdateManager(private val context: Context) {
         val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
         val uri = Uri.parse(updateInfo.downloadUrl)
         
-        val apkName = "MaterialTV-Update-${updateInfo.latestVersion}.apk"
+        val apkName = "UltraPlayer-Update-${updateInfo.latestVersion}.apk"
         val destinationFile = File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), apkName)
         if (destinationFile.exists()) {
             destinationFile.delete()
         }
 
         val request = DownloadManager.Request(uri)
-            .setTitle("MaterialTV Güncellemesi")
+            .setTitle("Ultra Player update")
             .setDescription("Sürüm ${updateInfo.latestVersion} indiriliyor...")
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
             .setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DOWNLOADS, apkName)

@@ -1,5 +1,5 @@
 <?php
-// MaterialTV panel - admin dashboard
+// Ultra Player panel - admin dashboard
 declare(strict_types=1);
 require __DIR__ . '/inc.php';
 
@@ -141,7 +141,7 @@ if ($action !== '') {
                     $head = (string)file_get_contents($f['tmp_name'], false, null, 0, 4);
                     if (substr($head, 0, 2) !== 'PK') { $error = "The $abi file isn't an APK."; continue; }
                     $safeVer = preg_replace('/[^A-Za-z0-9._-]/', '', $u['version_name'] ?: (string)$u['version_code']);
-                    $name = 'MaterialTV-' . $safeVer . '-' . $abi . '.apk';
+                    $name = 'UltraPlayer-' . $safeVer . '-' . $abi . '.apk';
                     if (move_uploaded_file($f['tmp_name'], UPLOAD_DIR . '/' . $name)) {
                         $u['url_' . $abi] = base_url() . 'uploads/' . rawurlencode($name);
                     } else {
@@ -177,7 +177,7 @@ if ($action !== '') {
             save_data($d); $flash = 'Message deleted.';
             break;
         case 'settings_save':
-            $d['settings']['app_name'] = trim((string)($_POST['app_name'] ?? '')) ?: 'MaterialTV';
+            $d['settings']['app_name'] = trim((string)($_POST['app_name'] ?? '')) ?: 'Ultra Player';
             $d['settings']['allow_custom_dns'] = !empty($_POST['allow_custom_dns']);
             $d['settings']['allow_m3u'] = !empty($_POST['allow_m3u']);
             $d['settings']['plex_enabled'] = !empty($_POST['plex_enabled']);
@@ -253,7 +253,7 @@ render_header($tabs[$tab]);
             <?php foreach (['arm32' => 'arm32 (Firestick / armeabi-v7a)', 'arm64' => 'arm64 (phones, newer boxes)', 'universal' => 'Universal (fallback)'] as $abi => $label): ?>
             <fieldset>
                 <legend><?= h($label) ?></legend>
-                <label>Direct link<input name="url_<?= $abi ?>" value="<?= h($u['url_' . $abi]) ?>" placeholder="https://.../MaterialTV-<?= $abi ?>.apk"></label>
+                <label>Direct link<input name="url_<?= $abi ?>" value="<?= h($u['url_' . $abi]) ?>" placeholder="https://.../UltraPlayer-<?= $abi ?>.apk"></label>
                 <label class="file">…or upload APK<input type="file" name="apk_<?= $abi ?>" accept=".apk"></label>
             </fieldset>
             <?php endforeach; ?>
@@ -331,7 +331,7 @@ render_footer();
 function render_header(string $title): void { ?>
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title><?= h($title) ?> · MaterialTV panel</title>
+<title><?= h($title) ?> · Ultra Player panel</title>
 <style>
 :root{--bg:#121016;--card:#1d1a23;--line:#2e2938;--txt:#ece6f0;--mut:#a59fb0;--pri:#cfbcff;--pri2:#381e72;--ok:#1f3b2a;--err:#4a1d1d}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}

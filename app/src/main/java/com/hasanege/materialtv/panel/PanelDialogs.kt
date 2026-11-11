@@ -44,7 +44,7 @@ fun PanelStartupDialogs() {
     val context = LocalContext.current
     var update by remember { mutableStateOf<PanelUpdate?>(null) }
     var messages by remember { mutableStateOf<List<PanelMessage>>(emptyList()) }
-    var appName by remember { mutableStateOf("MaterialTV") }
+    var appName by remember { mutableStateOf("Ultra Player") }
 
     LaunchedEffect(Unit) {
         val cfg = PanelClient.refresh(context) ?: return@LaunchedEffect

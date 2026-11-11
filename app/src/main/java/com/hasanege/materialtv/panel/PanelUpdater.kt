@@ -29,7 +29,7 @@ object PanelUpdater {
         dir.listFiles()?.forEach { it.delete() }
         val out = File(dir, "update.apk")
         val req = Request.Builder().url(url)
-            .header("User-Agent", "MaterialTV/${BuildConfig.VERSION_NAME}")
+            .header("User-Agent", "UltraPlayer/${BuildConfig.VERSION_NAME}")
             .build()
         client.newCall(req).execute().use { resp ->
             if (!resp.isSuccessful) throw java.io.IOException("Download failed (HTTP ${resp.code})")

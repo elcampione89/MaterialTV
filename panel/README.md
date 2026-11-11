@@ -1,11 +1,11 @@
-# MaterialTV panel
+# Ultra Player panel
 
-A small PHP panel for your MaterialTV build. It uses no database: everything is kept in `data/panel.json`.
+A small PHP panel for your Ultra Player build. It uses no database: everything is kept in `data/panel.json`.
 
 ## Install (cPanel)
-1. Upload the files in this folder (`index.php`, `api.php`, `inc.php`) to a folder on your site, e.g. `public_html/materialtv/`.
-2. Open `https://yourdomain/materialtv/` and create your admin login.
-3. Check that the app's `PANEL_URL` (in `gradle.properties`) points to `https://yourdomain/materialtv/api.php`.
+1. Upload the files in this folder (`index.php`, `api.php`, `inc.php`) to a folder on your site, e.g. `public_html/ultraplayer/`.
+2. Open `https://yourdomain/ultraplayer/` and create your admin login.
+3. Check that the app's `PANEL_URL` (in `gradle.properties`) points to `https://yourdomain/ultraplayer/api.php`.
 
 The panel creates `data/` (blocked from the web) and `uploads/` (APK downloads) the first time it runs. PHP 7.4 or newer is fine.
 

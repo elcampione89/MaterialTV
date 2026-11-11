@@ -22,9 +22,9 @@
     <string name="settings_feature_performance_desc">Автоперезапуск при падении скорости</string>
 
     <!-- App Name -->
-    <string name="app_name">MaterialTV</string>
-    <string name="app_name_material">Material</string>
-    <string name="app_name_tv">TV</string>
+    <string name="app_name">Ultra Player</string>
+    <string name="app_name_material">Ultra</string>
+    <string name="app_name_tv">\u0020Player</string>
 
     <!-- Main Navigation -->
     <string name="nav_home">Главная</string>
@@ -61,7 +61,7 @@
     <string name="search_field_label">Поиск фильмов, сериалов и каналов</string>
 
     <!-- Login -->
-    <string name="login_title">Вход в MaterialTV</string>
+    <string name="login_title">Вход в Ultra Player</string>
     <string name="login_tab_xtream">Xtream Codes</string>
     <string name="login_tab_m3u">M3U Playlist</string>
     <string name="login_m3u_url_label">URL M3U плейлиста</string>
@@ -402,7 +402,7 @@
     <string name="downloads_tab_completed">Завершено</string>
     <string name="downloads_tab_waiting">Ожидание</string>
     <string name="downloads_storage_access_required">Требуется доступ к хранилищу</string>
-    <string name="downloads_storage_access_message">Для отображения загрузок необходимо разрешение на \'Доступ ко всем файлам\'. Включите его в настройках MaterialTV.</string>
+    <string name="downloads_storage_access_message">Для отображения загрузок необходимо разрешение на \'Доступ ко всем файлам\'. Включите его в настройках Ultra Player.</string>
     <string name="downloads_open_settings">Открыть настройки</string>
     <string name="downloads_later">Позже</string>
 

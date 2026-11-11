@@ -65,13 +65,13 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: MaterialTV-apks
+          name: UltraPlayer-apks
           path: out/*.apk
 
       - name: Publish release (direct APK links)
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.apks.outputs.version }}-b${{ github.run_number }}
-          name: MaterialTV ${{ steps.apks.outputs.version }} (build ${{ github.run_number }})
+          name: Ultra Player ${{ steps.apks.outputs.version }} (build ${{ github.run_number }})
           files: out/*.apk
           make_latest: true

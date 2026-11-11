@@ -80,9 +80,9 @@ android {
             val abi = output.getFilter(com.android.build.OutputFile.ABI)
             val vName = variant.versionName
             output.outputFileName = if (abi != null) {
-                "MaterialTV-${vName}-${abi}.apk"
+                "UltraPlayer-${vName}-${abi}.apk"
             } else {
-                "MaterialTV-${vName}-universal.apk"
+                "UltraPlayer-${vName}-universal.apk"
             }
         }
     }

@@ -22,9 +22,9 @@
     <string name="settings_feature_performance_desc">Reinicio automático por caída de velocidad y baja latencia</string>
 
     <!-- App Name -->
-    <string name="app_name">MaterialTV</string>
-    <string name="app_name_material">Material</string>
-    <string name="app_name_tv">TV</string>
+    <string name="app_name">Ultra Player</string>
+    <string name="app_name_material">Ultra</string>
+    <string name="app_name_tv">\u0020Player</string>
 
     <!-- Main Navigation -->
     <string name="nav_home">Inicio</string>
@@ -61,7 +61,7 @@
     <string name="search_field_label">Buscar películas, series y TV</string>
 
     <!-- Login -->
-    <string name="login_title">Inicio de sesión en MaterialTV</string>
+    <string name="login_title">Inicio de sesión en Ultra Player</string>
     <string name="login_tab_xtream">Códigos Xtream</string>
     <string name="login_tab_m3u">Lista de reproducción M3U</string>
     <string name="login_m3u_url_label">URL de lista M3U</string>
@@ -400,7 +400,7 @@
     <string name="downloads_tab_completed">Completado</string>
     <string name="downloads_tab_waiting">Esperando</string>
     <string name="downloads_storage_access_required">Acceso al almacenamiento requerido</string>
-    <string name="downloads_storage_access_message">Debes habilitar el permiso de \'Acceso a todos los archivos\' para ver los archivos descargados. Habilita este permiso en los ajustes de MaterialTV.</string>
+    <string name="downloads_storage_access_message">Debes habilitar el permiso de \'Acceso a todos los archivos\' para ver los archivos descargados. Habilita este permiso en los ajustes de Ultra Player.</string>
     <string name="downloads_open_settings">Abrir ajustes</string>
     <string name="downloads_later">Luego</string>
 

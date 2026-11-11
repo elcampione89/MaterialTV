@@ -22,9 +22,9 @@
     <string name="settings_feature_performance_desc">Redémarrage auto en cas de chute de vitesse</string>
 
     <!-- App Name -->
-    <string name="app_name">MaterialTV</string>
-    <string name="app_name_material">Material</string>
-    <string name="app_name_tv">TV</string>
+    <string name="app_name">Ultra Player</string>
+    <string name="app_name_material">Ultra</string>
+    <string name="app_name_tv">\u0020Player</string>
 
     <!-- Main Navigation -->
     <string name="nav_home">Accueil</string>
@@ -61,7 +61,7 @@
     <string name="search_field_label">Rechercher des films, séries et TV en direct</string>
 
     <!-- Login -->
-    <string name="login_title">Connexion MaterialTV</string>
+    <string name="login_title">Connexion Ultra Player</string>
     <string name="login_tab_xtream">Codes Xtream</string>
     <string name="login_tab_m3u">Liste de lecture M3U</string>
     <string name="login_m3u_url_label">URL de la liste M3U</string>
@@ -402,7 +402,7 @@
     <string name="downloads_tab_completed">Terminé</string>
     <string name="downloads_tab_waiting">En attente</string>
     <string name="downloads_storage_access_required">Accès au stockage requis</string>
-    <string name="downloads_storage_access_message">Vous devez activer \'Accès à tous les fichiers\' pour voir les téléchargements. Activez cette permission dans les Paramètres de MaterialTV.</string>
+    <string name="downloads_storage_access_message">Vous devez activer \'Accès à tous les fichiers\' pour voir les téléchargements. Activez cette permission dans les Paramètres de Ultra Player.</string>
     <string name="downloads_open_settings">Ouvrir les Paramètres</string>
     <string name="downloads_later">Plus tard</string>
 

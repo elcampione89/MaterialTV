@@ -22,9 +22,9 @@
     <string name="settings_feature_performance_desc">速度低下時の自動再起動と低遅延</string>
 
     <!-- App Name -->
-    <string name="app_name">MaterialTV</string>
-    <string name="app_name_material">Material</string>
-    <string name="app_name_tv">TV</string>
+    <string name="app_name">Ultra Player</string>
+    <string name="app_name_material">Ultra</string>
+    <string name="app_name_tv">\u0020Player</string>
 
     <!-- Main Navigation -->
     <string name="nav_home">ホーム</string>
@@ -61,7 +61,7 @@
     <string name="search_field_label">映画、シリーズ、TVを検索</string>
 
     <!-- Login -->
-    <string name="login_title">MaterialTVにログイン</string>
+    <string name="login_title">Ultra Playerにログイン</string>
     <string name="login_tab_xtream">Xtreamコード</string>
     <string name="login_tab_m3u">M3Uプレイリスト</string>
     <string name="login_m3u_url_label">M3UプレイリストURL</string>
@@ -402,7 +402,7 @@
     <string name="downloads_tab_completed">完了</string>
     <string name="downloads_tab_waiting">待機中</string>
     <string name="downloads_storage_access_required">ストレージアクセスが必要です</string>
-    <string name="downloads_storage_access_message">ダウンロードしたファイルを表示するには、「すべてのファイルへのアクセス」権限を有効にする必要があります。MaterialTVの設定から有効にしてください。</string>
+    <string name="downloads_storage_access_message">ダウンロードしたファイルを表示するには、「すべてのファイルへのアクセス」権限を有効にする必要があります。Ultra Playerの設定から有効にしてください。</string>
     <string name="downloads_open_settings">設定を開く</string>
     <string name="downloads_later">後で</string>
 

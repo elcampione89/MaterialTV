@@ -29,10 +29,10 @@
     <string name="settings_feature_performance_desc">Auto-restart on speed drop and low latency</string>
 
     <!-- App Name -->
-    <string name="app_name">MaterialTV</string>
+    <string name="app_name">Ultra Player</string>
     <string name="nav_plex" translatable="false">Plex</string>
-    <string name="app_name_material">Material</string>
-    <string name="app_name_tv">TV</string>
+    <string name="app_name_material">Ultra</string>
+    <string name="app_name_tv">\u0020Player</string>
 
     <!-- Main Navigation -->
     <string name="nav_home">Home</string>
@@ -69,7 +69,7 @@
     <string name="search_field_label">Search for movies, series, and live TV</string>
 
     <!-- Login -->
-    <string name="login_title">MaterialTV Login</string>
+    <string name="login_title">Ultra Player Login</string>
     <string name="login_tab_xtream">Xtream Codes</string>
     <string name="login_tab_m3u">M3U Playlist</string>
     <string name="login_m3u_url_label">M3U Playlist URL</string>
@@ -424,7 +424,7 @@
     <string name="downloads_tab_completed">Completed</string>
     <string name="downloads_tab_waiting">Waiting</string>
     <string name="downloads_storage_access_required">Storage Access Required</string>
-    <string name="downloads_storage_access_message">You need to enable \'All files access\' permission to view downloaded files. Enable this permission in Settings for MaterialTV.</string>
+    <string name="downloads_storage_access_message">You need to enable \'All files access\' permission to view downloaded files. Enable this permission in Settings for Ultra Player.</string>
     <string name="downloads_open_settings">Open Settings</string>
     <string name="downloads_later">Later</string>
 

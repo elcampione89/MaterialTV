@@ -84,7 +84,7 @@ fun CrashScreen(stackTrace: String, onRestart: () -> Unit) {
             Spacer(modifier = Modifier.height(16.dp))
             
             Text(
-                text = "Oops! MaterialTV encountered an unexpected error.",
+                text = "Oops! Ultra Player encountered an unexpected error.",
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface
             )
